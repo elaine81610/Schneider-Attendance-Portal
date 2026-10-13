@@ -194,9 +194,15 @@
       if (data.currentSession) {
         document.getElementById('sessionLabel').textContent = `${data.currentSession} 課程`;
       }
-      if (data.students) {
-        renderCompaniesStep1(data.students);
+      
+      // 相容兩邊的欄位命名 (students 或 companies)
+      const listData = data.students || data.companies || [];
+      if (listData.length > 0) {
+        renderCompaniesStep1(listData);
+      } else {
+        document.getElementById('companyList').innerHTML = '<div style="text-align:center; padding:15px; color:var(--text-sub); font-size:0.88rem;">目前無學員資料</div>';
       }
+
       if (data.groups) {
         renderGroups(data.groups);
       }
@@ -246,7 +252,7 @@
       container.innerHTML = '';
 
       const companies = [...new Set(allStudentData.map(item => item.company))]
-        .filter(comp => comp.toLowerCase().includes(keyword));
+        .filter(comp => comp && comp.toLowerCase().includes(keyword));
 
       if (companies.length === 0) {
         container.innerHTML = '<div style="text-align:center; padding:15px; color:var(--text-sub); font-size:0.88rem;">找不到符合的公司</div>';
@@ -304,7 +310,7 @@
       isLeaveMode = false;
       document.getElementById('actionUserName').textContent = member.name;
       document.getElementById('actionUserTitle').textContent = `${member.company} · ${member.title || '學員'}`;
-      document.getElementById('defaultDietText').textContent = member.diet;
+      document.getElementById('defaultDietText').textContent = member.diet || '葷食';
       
       document.getElementById('modifyDietCheckbox').checked = false;
       document.getElementById('customDietInput').style.display = 'none';
@@ -341,7 +347,7 @@
       const customDiet = document.getElementById('dietNote').value.trim();
       const leaveReason = document.getElementById('leaveReasonInput').value.trim();
 
-      let finalDiet = selectedStudent.diet;
+      let finalDiet = selectedStudent.diet || '葷食';
       if (status === '確定出席' && modifyDiet) {
         if (!customDiet) { alert('請輸入您需要變更的飲食需求！'); return; }
         finalDiet = customDiet + " (已修改)";
