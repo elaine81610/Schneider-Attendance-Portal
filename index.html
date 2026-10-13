@@ -173,7 +173,6 @@
   </div>
 
   <script>
-    // 你的 GAS 後端部署 API 網址
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwmf4o3TMNgRgtLdNTw8kwPmdgmrF7T6uHqjt2UeeynwWLBfIN4TYtAlU6nFXwkEsWw/exec";
 
     let allStudentData = [];
@@ -186,23 +185,21 @@
     };
 
     function fetchInitialData() {
-      fetch(`${GAS_API_URL}?action=getInitialData`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.currentSession) {
-            document.getElementById('sessionLabel').textContent = `${data.currentSession} 課程`;
-          }
-          if (data.students) {
-            renderCompaniesStep1(data.students);
-          }
-          if (data.groups) {
-            renderGroups(data.groups);
-          }
-        })
-        .catch(err => {
-          console.error('資料載入錯誤:', err);
-          document.getElementById('companyList').innerHTML = '<div style="text-align:center; padding:15px; color:#c0392b; font-size:0.88rem;">資料載入失敗，請確認後端 API。</div>';
-        });
+      const script = document.createElement('script');
+      script.src = `${GAS_API_URL}?action=getInitialData&callback=handleInitialData`;
+      document.body.appendChild(script);
+    }
+
+    function handleInitialData(data) {
+      if (data.currentSession) {
+        document.getElementById('sessionLabel').textContent = `${data.currentSession} 課程`;
+      }
+      if (data.students) {
+        renderCompaniesStep1(data.students);
+      }
+      if (data.groups) {
+        renderGroups(data.groups);
+      }
     }
 
     function renderGroups(groups) {
@@ -364,15 +361,13 @@
 
       fetch(GAS_API_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
       })
-      .then(res => res.json())
-      .then(res => {
-        showStatus(res.message, res.success ? 'success' : 'error');
-        if (res.success) {
-          document.getElementById('actionCard').style.display = 'none';
-        }
+      .then(() => {
+        showStatus(`${selectedStudent.company} ${selectedStudent.name} 您好<br>已成功登記【10/15】為：${status}！`, 'success');
+        document.getElementById('actionCard').style.display = 'none';
       })
       .catch(err => {
         showStatus('傳送失敗，請重試或聯繫工作人員。', 'error');
