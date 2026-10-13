@@ -3,205 +3,387 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>課程出席確認與資源門戶</title>
+  <title>施耐德電機夥伴企業接班人發展計畫 - 課程出席確認</title>
   <style>
     :root {
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success-color: #16a34a;
-      --danger-color: #dc2626;
-      --bg-color: #f8fafc;
+      --bg: #eef0ec;
       --card-bg: #ffffff;
-      --text-color: #1e293b;
-      --subtext-color: #64748b;
-      --border-color: #e2e8f0;
+      --primary: #273b32;
+      --primary-light: #f3f5f2;
+      --text-main: #1a2420;
+      --text-sub: #62726a;
+      --border: #d2d7d0;
+      --tag-group-bg: #273b32;
+      --tag-group-text: #ffffff;
+      --tag-aspect-bg: #e1e6e0;
+      --tag-aspect-text: #273b32;
+      --btn-attend: #273b32;
+      --btn-absent: #8b3a3a;
+      --btn-absent-bg: #f8ecec;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); padding: 28px 16px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 440px; }
+    .header { margin-bottom: 24px; text-align: left; }
+    .subtitle { font-size: 0.88rem; color: var(--text-sub); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
+    .main-title { font-size: 1.85rem; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+    .session-desc { font-size: 0.9rem; color: var(--text-sub); margin-top: 8px; font-weight: 500; }
+    .svg-icon { width: 18px; height: 18px; fill: currentColor; display: inline-block; flex-shrink: 0; transition: transform 0.2s ease; }
+    .section-title { font-size: 0.9rem; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; letter-spacing: 0.3px; }
+    .block-a-card { background: var(--card-bg); border-radius: 16px; padding: 18px; margin-bottom: 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+    .step-page { display: none; }
+    .step-page.active { display: block; }
+    .search-wrapper { position: relative; margin-bottom: 12px; }
+    .search-wrapper .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-sub); pointer-events: none; }
+    .search-input { width: 100%; padding: 13px 14px 13px 42px; font-size: 0.95rem; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; outline: none; color: var(--text-main); font-weight: 500; }
+    .search-input:focus { border-color: var(--primary); background: #ffffff; }
+    .company-list { max-height: 280px; overflow-y: auto; }
+    .company-item { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; font-weight: 700; color: var(--primary); transition: all 0.15s ease; }
+    .company-item:hover { border-color: var(--primary); background: var(--primary-light); }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-sub); background: transparent; border: none; cursor: pointer; margin-bottom: 12px; font-weight: 700; }
+    .selected-company-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); margin-bottom: 12px; }
+    .member-item { background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.15s ease; }
+    .member-item:hover { border-color: var(--primary); background: var(--primary-light); }
+    .member-name { font-size: 0.98rem; font-weight: 700; color: var(--text-main); }
+    .member-title-text { font-size: 0.8rem; color: var(--text-sub); margin-top: 2px; }
+    .action-card { background: var(--primary-light); border-radius: 14px; padding: 16px; margin-top: 14px; display: none; }
+    .user-info-head { font-size: 1.05rem; font-weight: 800; color: var(--primary); }
+    .diet-box { background: #ffffff; border: 1px solid var(--border); padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 0.85rem; color: var(--text-main); }
+    .modify-diet-toggle { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-sub); margin-top: 8px; cursor: pointer; }
+    .custom-diet-input { margin-top: 8px; display: none; }
+    .custom-diet-input input { width: 100%; padding: 10px; font-size: 0.88rem; border: 1px solid var(--border); border-radius: 8px; }
+    .leave-box { background: #ffffff; border: 1px solid #f2c7c7; padding: 12px; border-radius: 10px; margin: 12px 0; font-size: 0.85rem; color: var(--btn-absent); display: none; }
+    .leave-box input { width: 100%; padding: 10px; font-size: 0.88rem; border: 1px solid var(--border); border-radius: 8px; margin-top: 6px; }
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .btn { padding: 12px; font-size: 0.92rem; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; }
+    .btn-attend { background-color: var(--btn-attend); color: #ffffff; }
+    .btn-absent { background-color: var(--btn-absent-bg); color: var(--btn-absent); border: 1px solid #f2c7c7; }
+    .group-accordion { background: var(--card-bg); border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+    .group-accordion-header { padding: 18px 20px; font-weight: 700; font-size: 0.98rem; color: var(--primary); cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); }
+    .group-accordion-content { display: none; padding: 0 16px 16px 16px; background: var(--bg); max-height: 420px; overflow-y: auto; }
+    .group-item-card { background: #ffffff; border-radius: 14px; padding: 16px; margin-top: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .group-head-tags { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .badge-group-name { background: var(--tag-group-bg); color: var(--tag-group-text); font-size: 0.8rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px; }
+    .badge-aspect { background: var(--tag-aspect-bg); color: var(--tag-aspect-text); font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .group-topic-box { background: var(--primary-light); border-left: 3.5px solid var(--primary); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 0.92rem; font-weight: 800; color: var(--text-main); line-height: 1.45; margin-bottom: 12px; }
+    .member-info-row { font-size: 0.83rem; line-height: 1.6; display: flex; flex-direction: column; gap: 4px; }
+    .leader-line { color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .leader-badge-mini { background: var(--primary); color: #fff; font-size: 0.7rem; padding: 1px 5px; border-radius: 4px; }
+    .members-line { color: var(--text-sub); font-weight: 500; }
+    .resource-card-btn { display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); border-radius: 16px; padding: 18px 20px; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.98rem; box-shadow: 0 4px 16px rgba(0,0,0,0.03); transition: all 0.15s ease; }
+    .resource-card-btn:hover { background: var(--primary-light); }
+    .status-msg { margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 0.88rem; text-align: center; font-weight: 700; display: none; }
+    .status-msg.success { background-color: #dcfce7; color: #166534; display: block; }
+    .status-msg.error { background-color: #fee2e2; color: #991b1b; display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="subtitle">施耐德電機合作夥伴企業接班人發展計畫</div>
+      <div class="main-title">課程出席確認</div>
+      <div class="session-desc">當前確認場次：<strong id="sessionLabel" style="color:var(--primary);">載入中...</strong></div>
+    </div>
+
+    <div class="section-title">
+      <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      出席狀況登記
+    </div>
+
+    <div class="block-a-card">
+      <div id="step1" class="step-page active">
+        <div class="search-wrapper">
+          <svg class="svg-icon search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="searchInput" class="search-input" placeholder="搜尋您的公司名稱..." oninput="filterCompanies()">
+        </div>
+        
+        <div id="companyList" class="company-list">
+          <div style="text-align:center; padding:20px; color:var(--text-sub); font-size:0.88rem;">資料載入中...</div>
+        </div>
+      </div>
+
+      <div id="step2" class="step-page">
+        <button class="back-btn" onclick="goToStep1()">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          重新選擇公司
+        </button>
+
+        <div id="selectedCompanyTitle" class="selected-company-title">公司名稱</div>
+        <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:10px; font-weight:600;">請點選您的姓名完成登記：</div>
+        
+        <div id="memberList"></div>
+
+        <div id="actionCard" class="action-card">
+          <div id="actionUserName" class="user-info-head">姓名</div>
+          <div id="actionUserTitle" style="font-size:0.82rem; color:var(--text-sub); font-weight:600;">職稱</div>
+          
+          <div id="dietBox" class="diet-box">
+            預設飲食：<strong id="defaultDietText">葷食</strong>
+            <label class="modify-diet-toggle">
+              <input type="checkbox" id="modifyDietCheckbox" onchange="toggleDietInput()"> 我這次想改變飲食需求
+            </label>
+            <div id="customDietInput" class="custom-diet-input">
+              <input type="text" id="dietNote" placeholder="例如：改為全素 / 不吃牛肉">
+            </div>
+          </div>
+
+          <div id="leaveBox" class="leave-box">
+            <label style="font-weight:700;">請假事由 / 備註：</label>
+            <input type="text" id="leaveReasonInput" placeholder="請簡述請假原因 (例如：公出 / 差旅)...">
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-attend" onclick="submitStatus('確定出席')">確定出席</button>
+            <button class="btn btn-absent" onclick="handleAbsentClick()">請假</button>
+          </div>
+        </div>
+
+        <div id="statusMsg" class="status-msg"></div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+      課程附件與參考資源
+    </div>
+
+    <div class="group-accordion">
+      <div class="group-accordion-header" onclick="toggleGroupAccordion()">
+        <span style="display:flex; align-items:center; gap:10px;">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          期末專題分組狀況表
+        </span>
+        <svg id="groupArrow" class="svg-icon" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+      </div>
+      <div id="groupContent" class="group-accordion-content">
+        <div style="text-align:center; padding:15px; color:var(--text-sub); font-size:0.85rem;">載入分組名單中...</div>
+      </div>
+    </div>
+
+    <a href="https://drive.google.com/drive/u/0/folders/1PjRDpR_e3AnDiMyg7ere47gFQ4ZeE1OB" target="_blank" class="resource-card-btn">
+      <span style="display:flex; align-items:center; gap:10px;">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        課程資源庫
+      </span>
+      <svg class="svg-icon" style="color:var(--text-sub);" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </a>
+
+  </div>
+
+  <script>
+    // 你的 GAS 後端部署 API 網址
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwmf4o3TMNgRgtLdNTw8kwPmdgmrF7T6uHqjt2UeeynwWLBfIN4TYtAlU6nFXwkEsWw/exec";
+
+    let allStudentData = [];
+    let selectedCompanyMembers = [];
+    let selectedStudent = null;
+    let isLeaveMode = false;
+
+    window.onload = function() {
+      fetchInitialData();
+    };
+
+    function fetchInitialData() {
+      fetch(`${GAS_API_URL}?action=getInitialData`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.currentSession) {
+            document.getElementById('sessionLabel').textContent = `${data.currentSession} 課程`;
+          }
+          if (data.students) {
+            renderCompaniesStep1(data.students);
+          }
+          if (data.groups) {
+            renderGroups(data.groups);
+          }
+        })
+        .catch(err => {
+          console.error('資料載入錯誤:', err);
+          document.getElementById('companyList').innerHTML = '<div style="text-align:center; padding:15px; color:#c0392b; font-size:0.88rem;">資料載入失敗，請確認後端 API。</div>';
+        });
     }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.5;
-      padding: 16px;
-      display: flex;
-      justify-content: center;
+    function renderGroups(groups) {
+      const container = document.getElementById('groupContent');
+      if (!groups || groups.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:15px; color:var(--text-sub); font-size:0.85rem;">目前尚無分組資料</div>';
+        return;
+      }
+      container.innerHTML = '';
+      groups.forEach(g => {
+        const div = document.createElement('div');
+        div.className = 'group-item-card';
+        div.innerHTML = `
+          <div class="group-head-tags">
+            <span class="badge-group-name">${g.groupName}</span>
+            ${g.aspect ? `<span class="badge-aspect">${g.aspect}</span>` : ''}
+          </div>
+          <div class="group-topic-box">${g.topic}</div>
+          <div class="member-info-row">
+            ${g.leader ? `<div class="leader-line"><span class="leader-badge-mini">組長</span> ${g.leader}</div>` : ''}
+            ${g.members ? `<div class="members-line">組員：${g.members}</div>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
     }
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-      padding: 24px;
-      margin-top: 10px;
+    function toggleGroupAccordion() {
+      const content = document.getElementById('groupContent');
+      const arrow = document.getElementById('groupArrow');
+      const isExpanded = content.style.display === 'block';
+      content.style.display = isExpanded ? 'none' : 'block';
+      arrow.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
+    function renderCompaniesStep1(data) {
+      allStudentData = data;
+      filterCompanies();
     }
 
-    .header h1 {
-      font-size: 1.35rem;
-      color: #0f172a;
-      margin-bottom: 6px;
+    function filterCompanies() {
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+      const container = document.getElementById('companyList');
+      container.innerHTML = '';
+
+      const companies = [...new Set(allStudentData.map(item => item.company))]
+        .filter(comp => comp.toLowerCase().includes(keyword));
+
+      if (companies.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:15px; color:var(--text-sub); font-size:0.88rem;">找不到符合的公司</div>';
+        return;
+      }
+
+      companies.forEach(company => {
+        const card = document.createElement('div');
+        card.className = 'company-item';
+        card.innerHTML = `
+          <span>${company}</span>
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        `;
+        card.onclick = () => goToStep2(company);
+        container.appendChild(card);
+      });
     }
 
-    .header p {
-      font-size: 0.875rem;
-      color: var(--subtext-color);
+    function goToStep2(companyName) {
+      selectedCompanyMembers = allStudentData.filter(item => item.company === companyName);
+      document.getElementById('selectedCompanyTitle').textContent = companyName;
+
+      const memberContainer = document.getElementById('memberList');
+      memberContainer.innerHTML = '';
+
+      selectedCompanyMembers.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'member-item';
+        card.innerHTML = `
+          <div>
+            <div class="member-name">${member.name}</div>
+            <div class="member-title-text">${member.title || '學員'}</div>
+          </div>
+          <svg class="svg-icon" style="color:var(--text-sub);" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        `;
+        card.onclick = () => selectStudentForAttendance(member);
+        memberContainer.appendChild(card);
+      });
+
+      document.getElementById('actionCard').style.display = 'none';
+      showStatus('', '');
+
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
     }
 
-    .form-group {
-      margin-bottom: 20px;
+    function goToStep1() {
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step1').classList.add('active');
+      selectedStudent = null;
     }
 
-    .form-group label {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #334155;
+    function selectStudentForAttendance(member) {
+      selectedStudent = member;
+      isLeaveMode = false;
+      document.getElementById('actionUserName').textContent = member.name;
+      document.getElementById('actionUserTitle').textContent = `${member.company} · ${member.title || '學員'}`;
+      document.getElementById('defaultDietText').textContent = member.diet;
+      
+      document.getElementById('modifyDietCheckbox').checked = false;
+      document.getElementById('customDietInput').style.display = 'none';
+      document.getElementById('dietNote').value = '';
+      
+      document.getElementById('dietBox').style.display = 'block';
+      document.getElementById('leaveBox').style.display = 'none';
+      document.getElementById('leaveReasonInput').value = '';
+      
+      document.getElementById('actionCard').style.display = 'block';
+      document.getElementById('actionCard').scrollIntoView({ behavior: 'smooth' });
     }
 
-    select, input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      font-size: 1rem;
-      border: 1.5px solid var(--border-color);
-      border-radius: 10px;
-      background-color: #fff;
-      color: var(--text-color);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      appearance: none;
-      -webkit-appearance: none;
+    function toggleDietInput() {
+      const checked = document.getElementById('modifyDietCheckbox').checked;
+      document.getElementById('customDietInput').style.display = checked ? 'block' : 'none';
     }
 
-    .select-wrapper {
-      position: relative;
+    function handleAbsentClick() {
+      if (!isLeaveMode) {
+        isLeaveMode = true;
+        document.getElementById('leaveBox').style.display = 'block';
+        document.getElementById('leaveReasonInput').focus();
+        showStatus('請填寫請假事由後，再次點擊「確認請假」送出。', '');
+        return;
+      }
+      submitStatus('請假');
     }
 
-    .select-wrapper::after {
-      content: "▼";
-      font-size: 0.75rem;
-      color: var(--subtext-color);
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
+    function submitStatus(status) {
+      if (!selectedStudent) return;
+
+      const modifyDiet = document.getElementById('modifyDietCheckbox').checked;
+      const customDiet = document.getElementById('dietNote').value.trim();
+      const leaveReason = document.getElementById('leaveReasonInput').value.trim();
+
+      let finalDiet = selectedStudent.diet;
+      if (status === '確定出席' && modifyDiet) {
+        if (!customDiet) { alert('請輸入您需要變更的飲食需求！'); return; }
+        finalDiet = customDiet + " (已修改)";
+      }
+
+      showStatus('資料傳送中...', '');
+
+      const payload = {
+        accountNo: selectedStudent.accountNo,
+        company: selectedStudent.company,
+        title: selectedStudent.title,
+        name: selectedStudent.name,
+        status: status,
+        diet: finalDiet,
+        leaveReason: leaveReason
+      };
+
+      fetch(GAS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        showStatus(res.message, res.success ? 'success' : 'error');
+        if (res.success) {
+          document.getElementById('actionCard').style.display = 'none';
+        }
+      })
+      .catch(err => {
+        showStatus('傳送失敗，請重試或聯繫工作人員。', 'error');
+      });
     }
 
-    select:focus, input[type="text"]:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    function showStatus(msg, type) {
+      const box = document.getElementById('statusMsg');
+      box.innerHTML = msg;
+      box.className = 'status-msg ' + (type || '');
     }
-
-    select:disabled {
-      background-color: #f1f5f9;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    /* 飲食區塊 */
-    .diet-box {
-      background-color: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 12px;
-      display: none;
-    }
-
-    .diet-info {
-      font-size: 0.9rem;
-      color: #0369a1;
-      margin-bottom: 8px;
-    }
-
-    .diet-info strong {
-      color: #0c4a6e;
-    }
-
-    .modify-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: #334155;
-      cursor: pointer;
-      margin-top: 6px;
-    }
-
-    .modify-toggle input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--primary-color);
-    }
-
-    .custom-diet-input {
-      margin-top: 10px;
-      display: none;
-    }
-
-    /* 按鈕區 */
-    .btn-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .btn {
-      padding: 14px;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-attend {
-      background-color: var(--success-color);
-      color: white;
-    }
-
-    .btn-attend:hover {
-      background-color: #15803d;
-    }
-
-    .btn-absent {
-      background-color: #fef2f2;
-      color: var(--danger-color);
-      border: 1.5px solid #fecaca;
-    }
-
-    .btn-absent:hover {
-      background-color: #fee2e2;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* 資源區塊 */
-    .resources-section {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px dashed var(--border-color);
+  </script>
+</body>
+</html>
